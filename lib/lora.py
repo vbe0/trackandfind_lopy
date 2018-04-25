@@ -34,11 +34,12 @@ class LORA(object):
         count = 0
         while not self.lora.has_joined():
             LED.blink(1, 2.5, 0xff0000)
-            #print("Trying to join: " ,  count)
+            print("Trying to join: " ,  count)
             count = count + 1
 
         # Create a LoRa socket
         LED.blink(2, 0.1)
+        LED.off()
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
 
         # Set the LoRaWAN data rate
