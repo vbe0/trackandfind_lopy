@@ -1,0 +1,43 @@
+from pytrack import Pytrack
+from L76GNSS import L76GNSS
+from LIS2HH12 import LIS2HH12
+ 
+from startiot import Startiot
+ 
+from network import LoRa
+ 
+import time
+import pycom
+import socket
+ 
+py = Pytrack()
+gps = L76GNSS(py)
+acc = LIS2HH12(py)
+ 
+pycom.heartbeat(False) # disable the blue blinking
+pycom.rgbled(0x000000) #LED off
+
+m_lat, m_lng = gps.coordinates()
+print('Coords:', "{},{}".format(m_lat, m_lng))
+
+ 
+iot = Startiot()
+
+pycom.rgbled(0xFF0000)
+iot.connect()
+pycom.rgbled(0x0000FF)
+
+# main loop
+while True:
+  print('----------------------------------')
+
+  m_lat, m_lng = gps.coordinates()
+  print('Coords:', "{},{}".format(m_lat, m_lon))
+
+  data = "{},{}".format(m_lat, m_lng)
+  print(data)
+  count = count + 1
+
+  iot.send(data)
+
+  time.sleep(3)
