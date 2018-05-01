@@ -12,11 +12,11 @@ def setup():
     global n, gps, sleep_time, dn, py
     
     # Initial sleep time
-    sleep_time = 15
+    sleep_time = 30
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    n.connect(dev_eui, app_eui, app_key)
+    n.connect(dev_eui2, app_eui, app_key2)
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
@@ -31,14 +31,14 @@ if __name__ == "__main__":
     setup()
 
     while True:
-        #sleep(sleep_time)
+        sleep(sleep_time)
         #py.setup_sleep(60)
         #py.go_to_sleep()
         data = ""
         m_lat = m_lng = None
         # Measure
         try:
-            print ("Fetching gps position")
+            #print ("Fetching gps position")
             m_lat, m_lng = gps.coordinates()
             battery = '{}V'.format(py.read_battery_voltage())
 
