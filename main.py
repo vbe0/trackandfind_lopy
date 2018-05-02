@@ -22,28 +22,33 @@ def setup():
     #print('{}V'.format(py.read_battery_voltage()))
     gps = L76GNSS(py, timeout=10)
 
+    LED.blink(1, 0.1, 0xffffff)
+    LED.off()
     # Connect Sensors
     print("Setup... done")
 
 
 if __name__ == "__main__":
     # Setup network & sensors
+    LED.heartbeat(False)
+    LED.off()
     setup()
 
     while True:
         sleep(sleep_time)
-        #py.setup_sleep(60)
-        #py.go_to_sleep()
+
         data = ""
         m_lat = m_lng = None
         # Measure
         try:
             #print ("Fetching gps position")
             m_lat, m_lng = gps.coordinates()
-            battery = '{}'.format(py.read_battery_voltage())
-
+            battery = py.read_battery_voltage()
+            battery = py.read_battery_voltage()
+            print("Battery: ", battery)
+            battery  = "%.2f" % float(battery) 
             data = "%s %s %s" % (m_lat, m_lng, battery)
-            #print("Data: ", data)
+            print("Data: ", data, "Size:", len(data))
         except Exception as e:
             print("Measure error: ", e)
 
@@ -55,6 +60,9 @@ if __name__ == "__main__":
         else :
             # Send packet
             LED.blink(2, 0.1, 0xf0f000)        
+        
         response = n.send(data)
-
+        
+        # py.setup_sleep(20)
+        # py.go_to_sleep()
 

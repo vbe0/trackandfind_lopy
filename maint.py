@@ -25,6 +25,7 @@ def setup():
     n = LORA()
     #n.connect(dev_eui, app_eui, app_key)
 
+
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
     gps = L76GNSS(py, timeout=10)
@@ -38,49 +39,48 @@ def setup():
 
 if __name__ == "__main__":
     # Setup network & sensors
-    print(setupDone)
-    if not setupDone:
-        setup()
-    print(setupDone)
-    #while True:
-    #sleep(sleep_time)
-    data = ""
-    m_lat = m_lng = None
-    # Measure
-    try:
-        print ("Fetching gps position")
-        #m_lat, m_lng = gps.coordinates()
-        battery = py.read_battery_voltage()
-        print("Battery: ", battery)
-        battery  = "%.2f" % float(battery) 
-        tmp = 100.0
-        count = 0 
-        # Get temperature
-        while (float(tmp) > 50.0 and count < 10):
-            tmp = temp.read_temp_async()
-            temp.start_convertion()
-            tmp  = "%.2f" % float(tmp) 
-            print(tmp, "Tries: ", count)
-            count += 1  
-        print("HEi")
-        data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
-        print("Data: ", data, "Size: ", len(data))
-    except Exception as e:
-        print("Measure error: ", e)
+    LED.heartbeat(False)
+    LED.off()
+    setup()
+    LED.blink(5, 0.2, 0xffffff)
+    while True:
+        #sleep(sleep_time)
+        data = ""
+        m_lat = m_lng = None
+        # Measure
+        try:
+            print ("Fetching gps position")
+            #m_lat, m_lng = gps.coordinates()
+            battery = py.read_battery_voltage()
+            print("Battery: ", battery)
+            battery  = "%.2f" % float(battery) 
+            tmp = 100.0
+            count = 0 
+            # Get temperature
+            while (float(tmp) > 50.0 and count < 10):
+                tmp = temp.read_temp_async()
+                temp.start_convertion()
+                tmp  = "%.2f" % float(tmp) 
+                print(tmp, "Tries: ", count)
+                count += 1  
+            print("HEi")
+            data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
+            print("Data: ", data, "Size: ", len(data))
+        except Exception as e:
+            print("Measure error: ", e)
 
-    #print('Coords:', "{},{}".format(m_lat, m_lng))
-    if m_lat == None: 
-        print("Failed to receive gps signals")
-        LED.blink(1, 0.1, 0x0000ff)
-        LED.off()  
-    else :
-        # Send packet
-        LED.blink(2, 0.1, 0xf0f000)
-    n.connect(dev_eui, app_eui, app_key)
-    
-    response = n.send(data)
+        #print('Coords:', "{},{}".format(m_lat, m_lng))
+        if m_lat == None: 
+            print("Failed to receive gps signals")
+            LED.blink(1, 0.1, 0x0000ff)
+            LED.off()  
+        else :
+            # Send packet
+            LED.blink(2, 0.1, 0xf0f000)
+        
+        #response = n.send(data)
 
 
-    py.setup_sleep(sleep_time)
-    print("Goes to sleep: ", sleep_time, "s")
-    py.go_to_sleep()
+        py.setup_sleep(sleep_time)
+        print("Goes to sleep: ", sleep_time, "s")
+        py.go_to_sleep()
