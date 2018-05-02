@@ -56,15 +56,23 @@ if __name__ == "__main__":
         tmp = 100.0
         count = 0 
         # Get temperature
-        while (float(tmp) > 50.0 and count < 3):
+        while (float(tmp) > 50.0 and count < 5):
             tmp = temp.read_temp_async()
+            sleep(1)
             temp.start_convertion()
+            sleep(1)
+            if (not tmp):
+                sleep(5)
+                print ("Failed to read temperature")
+                count += 1 
+                tmp = 100.0
+                continue
             print("tmp: ", tmp)
             tmp  = "%.2f" % float(tmp) 
-            print("Temperature: ", tmp, "Tries: ", count)
             count += 1  
 
-        data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
+        print("Temperature: ", tmp, "Tries: ", count)
+        data = "%s %s %s %s" % (m_lat, m_lng, battery, tmp)
         print("Data: ", data, "Size: ", len(data))
     except Exception as e:
         print("Measure error: ", e)
