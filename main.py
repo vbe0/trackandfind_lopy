@@ -23,7 +23,7 @@ def setup():
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
-    gps = L76GNSS(py, timeout=3)
+    gps = L76GNSS(py, timeout=10)
 
     # Connect Sensors
     print("Setup... done")
@@ -37,7 +37,8 @@ if __name__ == "__main__":
     # Measure
     try:
         #print ("Fetching gps position")
-        m_lat, m_lng = gps.coordinates()
+        sleep(1)
+        m_lat, m_lng = gps.coordinates(debug=True)
         battery = py.read_battery_voltage()
         battery = py.read_battery_voltage()
         print("Battery: ", battery)
