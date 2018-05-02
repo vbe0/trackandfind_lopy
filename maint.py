@@ -25,9 +25,6 @@ def setup():
     n = LORA()
     #n.connect(dev_eui, app_eui, app_key)
 
-    n2 = LORA()
-    #n2.connect(dev_eui2, app_eui, app_key2)
-
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
     gps = L76GNSS(py, timeout=10)
