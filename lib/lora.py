@@ -10,7 +10,7 @@ class LORA(object):
     lora = None
     s = None
 
-    def connect(self, dev_eui, app_eui, app_key):
+    def connect(self, dev_eui, app_eui, app_key, is_joined=False):
         """
         Connect device to LoRa.
         Set the socket and lora instances.
@@ -27,19 +27,25 @@ class LORA(object):
         # Initialize LoRa in LORAWAN mode
         self.lora = LoRa(mode = LoRa.LORAWAN)
 
-        # Join a network using OTAA (Over the Air Activation)
-        self.lora.join(activation = LoRa.OTAA, auth = (dev_eui, app_eui, app_key), timeout = 0)
+        if (not is_joined):
+            # Join a network using OTAA (Over the Air Activation)
+            self.lora.join(activation = LoRa.OTAA, auth = (dev_eui, app_eui, app_key), timeout = 0)
 
-        # Wait until the module has joined the network
-        count = 0
-        while not self.lora.has_joined():
-            LED.blink(1, 2.5, 0xff0000)
-            print("Trying to join: " ,  count)
-            count = count + 1
-
+            # Wait until the module has joined the network
+            count = 0
+            while not self.lora.has_joined():
+                LED.blink(1, 2.5, 0xff0000)
+                print("Trying to join: " ,  count)
+                count = count + 1
+            
+            self.lora.nvram_save()
+            LED.blink(2, 0.1)
+            LED.off()
+        else:
+            self.lora.nvram_restore()
+            LED.blink(5, 0.1, 0x0f0f0f)
+            LED.off()
         # Create a LoRa socket
-        LED.blink(2, 0.1)
-        LED.off()
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
 
         # Set the LoRaWAN data rate

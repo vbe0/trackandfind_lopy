@@ -23,7 +23,20 @@ def setup():
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    #n.connect(dev_eui, app_eui, app_key)
+    try:
+        loraSaved = pycom.nvs_get('loraSaved')
+        print ("LoraSaved: ", loraSaved)
+        if (not loraSaved):
+            print("Lora not saved")
+            n.connect(dev_eui2, app_eui, app_key2)
+            pycom.nvs_set('loraSaved', 1)
+        else:
+            print("Lora was saved")
+            n.connect(dev_eui2, app_eui, app_key2, True)
+    except:
+        print("Lora not saved, exception")
+        n.connect(dev_eui2, app_eui, app_key2)
+        pycom.nvs_set('loraSaved', 1)
 
 
     py = Pytrack()
@@ -41,10 +54,9 @@ if __name__ == "__main__":
     # Setup network & sensors
     LED.heartbeat(False)
     LED.off()
-    setup()
-    LED.blink(5, 0.2, 0xffffff)
     while True:
-        #sleep(sleep_time)
+        setup()
+        sleep(sleep_time)
         data = ""
         m_lat = m_lng = None
         # Measure
@@ -63,7 +75,7 @@ if __name__ == "__main__":
                 tmp  = "%.2f" % float(tmp) 
                 print(tmp, "Tries: ", count)
                 count += 1  
-            print("HEi")
+
             data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
             print("Data: ", data, "Size: ", len(data))
         except Exception as e:
@@ -81,6 +93,6 @@ if __name__ == "__main__":
         #response = n.send(data)
 
 
-        py.setup_sleep(sleep_time)
-        print("Goes to sleep: ", sleep_time, "s")
-        py.go_to_sleep()
+        # py.setup_sleep(sleep_time)
+        # print("Goes to sleep: ", sleep_time, "s")
+        # py.go_to_sleep()
