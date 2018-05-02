@@ -40,7 +40,7 @@ if __name__ == "__main__":
         try:
             #print ("Fetching gps position")
             m_lat, m_lng = gps.coordinates()
-            battery = '{}V'.format(py.read_battery_voltage())
+            battery = '{}'.format(py.read_battery_voltage())
 
             data = "%s %s %s" % (m_lat, m_lng, battery)
             #print("Data: ", data)
@@ -50,10 +50,11 @@ if __name__ == "__main__":
         #print('Coords:', "{},{}".format(m_lat, m_lng))
         if m_lat == None: 
             print("Failed to receive gps signals")
-            LED.blink(2, 0.1, 0x0000ff)  
+            LED.blink(1, 0.1, 0x0000ff)
+            LED.off()  
         else :
             # Send packet
             LED.blink(2, 0.1, 0xf0f000)        
-            response = n.send(data)
+        response = n.send(data)
 
 
