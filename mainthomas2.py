@@ -1,4 +1,4 @@
-import config
+from config import dev_eui, app_eui, app_key, dev_eui2, app_key2
 from lora import LORA
 
 from led import LED
@@ -19,12 +19,14 @@ def setup():
     global n, gps, sleep_time, dn, py, temp, n2, setupDone
     setupDone = True
     # Initial sleep time
-    sleep_time = 60
+    sleep_time = 10
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    n.connect(config.dev_eui1429, config.app_eui, config.app_key1429)
-    
+    #n.connect(dev_eui, app_eui, app_key)
+
+    n2 = LORA()
+    #n2.connect(dev_eui2, app_eui, app_key2)
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
@@ -39,11 +41,12 @@ def setup():
 
 if __name__ == "__main__":
     # Setup network & sensors
-    LED.heartbeat(False)
-    LED.off()
-
-    setup()
-    
+    print(setupDone)
+    if not setupDone:
+        setup()
+    print(setupDone)
+    while True:
+    sleep(sleep_time)
     data = ""
     m_lat = m_lng = None
     # Measure
@@ -56,14 +59,13 @@ if __name__ == "__main__":
         tmp = 100.0
         count = 0 
         # Get temperature
-        while (float(tmp) > 50.0 and count < 3):
+        while (float(tmp) > 50.0 and count < 10):
             tmp = temp.read_temp_async()
             temp.start_convertion()
-            print("tmp: ", tmp)
             tmp  = "%.2f" % float(tmp) 
-            print("Temperature: ", tmp, "Tries: ", count)
+            print(tmp, "Tries: ", count)
             count += 1  
-
+        print("HEi")
         data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
         print("Data: ", data, "Size: ", len(data))
     except Exception as e:
@@ -77,10 +79,11 @@ if __name__ == "__main__":
     else :
         # Send packet
         LED.blink(2, 0.1, 0xf0f000)
-        LED.off()    
-        
+    n.connect(dev_eui, app_eui, app_key)
+    
     response = n.send(data)
 
-    #Go to deep sleep 
+
     py.setup_sleep(sleep_time)
+    print("Goes to sleep: ", sleep_time, "s")
     py.go_to_sleep()

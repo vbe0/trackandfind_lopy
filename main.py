@@ -15,7 +15,7 @@ def setup():
     global n, gps, sleep_time, dn, py
 
     # Initial sleep time
-    sleep_time = 30
+    sleep_time = 60
 
     # Connect to LoRaWAN Decent
     n = LORA()
