@@ -1,4 +1,4 @@
-from config import dev_eui, app_eui, app_key, dev_eui2, app_key2
+import config
 from lora import LORA
 
 from led import LED
@@ -19,25 +19,12 @@ def setup():
     global n, gps, sleep_time, dn, py, temp, n2, setupDone
     setupDone = True
     # Initial sleep time
-    sleep_time = 10
+    sleep_time = 30
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    try:
-        loraSaved = pycom.nvs_get('loraSaved')
-        print ("LoraSaved: ", loraSaved)
-        if (not loraSaved):
-            print("Lora not saved")
-            n.connect(dev_eui2, app_eui, app_key2)
-            pycom.nvs_set('loraSaved', 1)
-        else:
-            print("Lora was saved")
-            n.connect(dev_eui2, app_eui, app_key2, True)
-    except:
-        print("Lora not saved, exception")
-        n.connect(dev_eui2, app_eui, app_key2)
-        pycom.nvs_set('loraSaved', 1)
-
+    n.connect(config.dev_eui1429, config.app_eui, config.app_key1429)
+    
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
@@ -54,45 +41,46 @@ if __name__ == "__main__":
     # Setup network & sensors
     LED.heartbeat(False)
     LED.off()
-    while True:
-        setup()
-        sleep(sleep_time)
-        data = ""
-        m_lat = m_lng = None
-        # Measure
-        try:
-            print ("Fetching gps position")
-            #m_lat, m_lng = gps.coordinates()
-            battery = py.read_battery_voltage()
-            print("Battery: ", battery)
-            battery  = "%.2f" % float(battery) 
-            tmp = 100.0
-            count = 0 
-            # Get temperature
-            while (float(tmp) > 50.0 and count < 10):
-                tmp = temp.read_temp_async()
-                temp.start_convertion()
-                tmp  = "%.2f" % float(tmp) 
-                print(tmp, "Tries: ", count)
-                count += 1  
 
-            data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
-            print("Data: ", data, "Size: ", len(data))
-        except Exception as e:
-            print("Measure error: ", e)
+    setup()
+    
+    data = ""
+    m_lat = m_lng = None
+    # Measure
+    try:
+        print ("Fetching gps position")
+        #m_lat, m_lng = gps.coordinates()
+        battery = py.read_battery_voltage()
+        print("Battery: ", battery)
+        battery  = "%.2f" % float(battery) 
+        tmp = 100.0
+        count = 0 
+        # Get temperature
+        while (float(tmp) > 50.0 and count < 3):
+            tmp = temp.read_temp_async()
+            temp.start_convertion()
+            print("tmp: ", tmp)
+            tmp  = "%.2f" % float(tmp) 
+            print("Temperature: ", tmp, "Tries: ", count)
+            count += 1  
 
-        #print('Coords:', "{},{}".format(m_lat, m_lng))
-        if m_lat == None: 
-            print("Failed to receive gps signals")
-            LED.blink(1, 0.1, 0x0000ff)
-            LED.off()  
-        else :
-            # Send packet
-            LED.blink(2, 0.1, 0xf0f000)
+        data = "%s %s %s %s" % (m_lat, m_lng, str(battery), str(tmp))
+        print("Data: ", data, "Size: ", len(data))
+    except Exception as e:
+        print("Measure error: ", e)
+
+    #print('Coords:', "{},{}".format(m_lat, m_lng))
+    if m_lat == None: 
+        print("Failed to receive gps signals")
+        LED.blink(1, 0.1, 0x0000ff)
+        LED.off()  
+    else :
+        # Send packet
+        LED.blink(2, 0.1, 0xf0f000)
+        LED.off()    
         
-        #response = n.send(data)
+    response = n.send(data)
 
-
-        # py.setup_sleep(sleep_time)
-        # print("Goes to sleep: ", sleep_time, "s")
-        # py.go_to_sleep()
+    #Go to deep sleep 
+    py.setup_sleep(sleep_time)
+    py.go_to_sleep()

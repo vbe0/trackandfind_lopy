@@ -1,11 +1,10 @@
-from config import dev_eui, app_eui, app_key, dev_eui2, app_key2
+import config
 from lora import LORA
 
 from led import LED
 from pytrack import Pytrack
 from L76GNSS import L76GNSS # gps
 #from LIS2HH12 import LIS2HH12 # acc
-import pycom
 from time import sleep
 
 def setup():
@@ -20,30 +19,18 @@ def setup():
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    try:
-        loraSaved = pycom.nvs_get('loraSaved')
-        print ("LoraSaved: ", loraSaved)
-        if (not loraSaved):
-            print("Lora not saved")
-            n.connect(dev_eui2, app_eui, app_key2)
-            pycom.nvs_set('loraSaved', 1)
-        else:
-            print("Lora was saved")
-            n.connect(dev_eui2, app_eui, app_key2, True)
-    except:
-        print("Lora not saved, exception")
-        n.connect(dev_eui2, app_eui, app_key2)
-        pycom.nvs_set('loraSaved', 1)
+    n.connect(config.dev_eui1416, config.app_eui, config.app_key1416)
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
-    gps = L76GNSS(py, timeout=10)
+    gps = L76GNSS(py, timeout=3)
 
     # Connect Sensors
     print("Setup... done")
 
 if __name__ == "__main__":
     # Setup network & sensors
+
     setup()
     data = ""
     m_lat = m_lng = None
@@ -55,7 +42,8 @@ if __name__ == "__main__":
         battery = py.read_battery_voltage()
         print("Battery: ", battery)
         battery  = "%.2f" % float(battery) 
-        data = "%s %s %s" % (m_lat, m_lng, battery)
+        temp = 20.5
+        data = "%s %s %s %s" % (m_lat, m_lng, battery, temp)
         print("Data: ", data, "Size:", len(data))
     except Exception as e:
         print("Measure error: ", e)
@@ -71,6 +59,8 @@ if __name__ == "__main__":
         LED.off()    
 
     response = n.send(data)
+
+    #Go to deep sleep 
     py.setup_sleep(sleep_time)
     py.go_to_sleep()
 
