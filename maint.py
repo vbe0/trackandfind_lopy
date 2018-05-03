@@ -13,22 +13,20 @@ from lib.onewire import OneWire
 from lib.deepsleep import DeepSleep
 import sys
 
-setupDone = False
 
 def setup():
-    global n, gps, sleep_time, dn, py, temp, n2, setupDone
-    setupDone = True
+    global n, gps, sleep_time, dn, py, temp
     # Initial sleep time
     sleep_time = 60
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    n.connect(config.dev_eui1429, config.app_eui, config.app_key1429)
+    n.connect(config.dev_eui, config.app_eui, config.app_key)
     
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
-    gps = L76GNSS(py, timeout=10)
+    gps = L76GNSS(py, timeout=30)
 
     # Connect Sensors
     ow = OneWire(Pin('P9'))
@@ -91,4 +89,4 @@ if __name__ == "__main__":
 
     #Go to deep sleep 
     py.setup_sleep(sleep_time)
-    py.go_to_sleep()
+    py.go_to_sleep(gps=True)
