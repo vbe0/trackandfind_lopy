@@ -23,7 +23,7 @@ def setup():
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
-    gps = L76GNSS(py, timeout=10)
+    gps = L76GNSS(py, timeout=30)
 
     # Connect Sensors
     print("Setup... done")
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         LED.blink(1, 0.1, 0x0000ff)
         LED.off()  
     else :
-        # Send packet
+        # Send packe
         LED.blink(2, 0.1, 0xf0f000)
         LED.off()    
 
@@ -63,5 +63,5 @@ if __name__ == "__main__":
 
     #Go to deep sleep 
     py.setup_sleep(sleep_time)
-    py.go_to_sleep()
+    py.go_to_sleep(gps=True)
 

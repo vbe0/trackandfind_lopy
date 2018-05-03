@@ -87,8 +87,8 @@ class LORA(object):
                     print("Caught exception while sending")
                     print("errno: ", e.errno)
                 tries += 1
-                if (tries == 3):
-                    pycom.nvs_erase('loraSaved')
+                # if (tries == 3):
+                #     pycom.nvs_erase('loraSaved')
             
         LED.off()
         #data = self.s.recv(64)
