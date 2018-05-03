@@ -38,7 +38,7 @@ if __name__ == "__main__":
     try:
         #print ("Fetching gps position")
         sleep(1)
-        m_lat, m_lng = gps.coordinates(debug=True)
+        m_lat, m_lng = gps.coordinates()
         battery = py.read_battery_voltage()
         battery = py.read_battery_voltage()
         print("Battery: ", battery)

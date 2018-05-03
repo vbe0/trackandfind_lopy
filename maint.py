@@ -46,8 +46,9 @@ if __name__ == "__main__":
     m_lat = m_lng = None
     # Measure
     try:
-        print ("Fetching gps position")
-        #m_lat, m_lng = gps.coordinates()
+        # Get gps coords
+        m_lat, m_lng = gps.coordinates()
+        # Get battery voltage
         battery = py.read_battery_voltage()
         print("Battery: ", battery)
         battery  = "%.2f" % float(battery) 
