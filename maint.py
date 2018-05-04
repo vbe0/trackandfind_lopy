@@ -13,11 +13,8 @@ from lib.onewire import OneWire
 from lib.deepsleep import DeepSleep
 import sys
 
-setupDone = False
-
 def setup():
-    global n, gps, sleep_time, dn, py, temp, n2, setupDone
-    setupDone = True
+    global n, gps, sleep_time, dn, py, temp
     # Initial sleep time
     sleep_time = 60
 
