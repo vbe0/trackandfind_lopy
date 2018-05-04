@@ -4,7 +4,7 @@ from lora import LORA
 from led import LED
 from pytrack import Pytrack
 from L76GNSS import L76GNSS # gps
-#from LIS2HH12 import LIS2HH12 # acc
+from LIS2HH12 import LIS2HH12 # acc
 
 from time import sleep
 from machine import Pin
@@ -14,7 +14,7 @@ from lib.deepsleep import DeepSleep
 import sys
 
 def setup():
-    global n, gps, sleep_time, dn, py, temp
+    global n, gps, sleep_time, dn, py, temp, acc
     # Initial sleep time
     sleep_time = 60
 
@@ -26,6 +26,8 @@ def setup():
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
     gps = L76GNSS(py, timeout=30)
+
+    acc = LIS2HH12(py)
 
     # Connect Sensors
     ow = OneWire(Pin('P9'))

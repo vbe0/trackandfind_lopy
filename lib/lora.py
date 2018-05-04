@@ -40,6 +40,8 @@ class LORA(object):
                 LED.blink(1, 2.5, 0xff0000)
                 print("Trying to join: " ,  count)
                 count = count + 1
+                if (count > 50):
+                    return False
         
             LED.blink(2, 0.1)
             LED.off()
@@ -67,13 +69,14 @@ class LORA(object):
         # Create a raw LoRa socket
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
         self.s.setblocking(True)
+        return True 
         
     def send(self, data):
         """
         Send data over the network.
         """
         tries = 0 
-        while tries < 3: 
+        while tries < 5: 
             try:
                 self.s.send(data)
                 LED.blink(2, 0.1, 0x00ff00)
@@ -87,11 +90,15 @@ class LORA(object):
                     print("Caught exception while sending")
                     print("errno: ", e.errno)
                 tries += 1
-                # if (tries == 3):
-                #     pycom.nvs_erase('loraSaved')
+                if (tries == 5):
+                    pycom.nvs_erase('loraSaved')
             
         LED.off()
         #data = self.s.recv(64)
         #print("Received data:", data)
 
         return " "#data
+
+    # Erease state telling that lora is saved. Will initate new connection next time. 
+    def ereaseloraSaved(self):
+        pycompycom.nvs_erase('loraSaved')

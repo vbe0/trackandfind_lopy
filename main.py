@@ -4,7 +4,7 @@ from lora import LORA
 from led import LED
 from pytrack import Pytrack
 from L76GNSS import L76GNSS # gps
-#from LIS2HH12 import LIS2HH12 # acc
+from LIS2HH12 import LIS2HH12 # acc
 from time import sleep
 
 def setup():
@@ -12,19 +12,23 @@ def setup():
     LED.heartbeat(False)
     LED.off()
 
-    global n, gps, sleep_time, dn, py
+    global n, gps, sleep_time, dn, py, acc
 
     # Initial sleep time
-    sleep_time = 60
+    sleep_time = 60 * 5
 
     # Connect to LoRaWAN Decent
     n = LORA()
-    n.connect(config.dev_eui1416, config.app_eui, config.app_key1416)
+    if (not n.connect(config.dev_eui1416, config.app_eui, config.app_key1416)): 
+        # If still not connected, go to sleep one minute and try again (reboots after sleep).
+        py.setup_sleep(60)
+        py.go_to_sleep()
 
     py = Pytrack()
     #print('{}V'.format(py.read_battery_voltage()))
-    gps = L76GNSS(py, timeout=30)
+    gps = L76GNSS(py, timeout=1)
 
+    acc = LIS2HH12(py)
     # Connect Sensors
     print("Setup... done")
 
@@ -36,15 +40,25 @@ if __name__ == "__main__":
     m_lat = m_lng = None
     # Measure
     try:
-        #print ("Fetching gps position")
         sleep(1)
         m_lat, m_lng = gps.coordinates()
+        print ("GPS: %s, %s " % (m_lat, m_lng))
+
+        x, y, z = acc.acceleration()
+        print ("Acc: x: %s, y: %s, z: %s" % (x, y, z))
+        x_1, y_1, z_1 = "%.2f" % x, "%.2f" % y, "%.2f" % z 
+        sumAcc = float(x_1) + float(y_1) + float(z_1)
+        print ("Sum x, y, z Acc: %s" % (sumAcc))
+
         battery = py.read_battery_voltage()
         battery = py.read_battery_voltage()
         print("Battery: ", battery)
         battery  = "%.2f" % float(battery) 
+        
+        # Don't hava an temperature sensor, so just sets an value 
         temp = 20.5
-        data = "%s %s %s %s" % (m_lat, m_lng, battery, temp)
+        
+        data = "%s %s %s %s %s" % (m_lat, m_lng, battery, temp, sumAcc)
         print("Data: ", data, "Size:", len(data))
     except Exception as e:
         print("Measure error: ", e)
@@ -58,8 +72,12 @@ if __name__ == "__main__":
         # Send packe
         LED.blink(2, 0.1, 0xf0f000)
         LED.off()    
+    try:
+        response = n.send(data)
+    except:
+        print("Failed to send data, should try to reconnect")
+        n.eraseloraSaved()
 
-    response = n.send(data)
 
     #Go to deep sleep 
     py.setup_sleep(sleep_time)
