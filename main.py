@@ -25,7 +25,7 @@ def setup():
         py.go_to_sleep()
 
     py = Pytrack()
-    #print('{}V'.format(py.read_battery_voltage()))
+    
     gps = L76GNSS(py, timeout=1)
 
     acc = LIS2HH12(py)

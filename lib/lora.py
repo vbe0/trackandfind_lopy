@@ -82,7 +82,7 @@ class LORA(object):
                 LED.blink(2, 0.1, 0x00ff00)
                 print("Sending data:")
                 print(data)
-                tries = 5
+                tries = 6
             except OSError as e:
                 LED.blink(2, 0.2, 0xff0000)
                 print ("Failed to send data")
