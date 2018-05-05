@@ -24,10 +24,10 @@ def setup():
     if (not n.connect(config.dev_eui1416, config.app_eui, config.app_key1416)): 
         # If still not connected, go to sleep one minute and try again (reboots after sleep).
         py.setup_sleep(60)
-        py.go_to_sleep()
+        py.go_to_sleep(gps=True)
 
     
-    gps = L76GNSS(py, timeout=1)
+    gps = L76GNSS(py, timeout=30)
 
     acc = LIS2HH12(py)
     # Connect Sensors
