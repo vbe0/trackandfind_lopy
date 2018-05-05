@@ -16,6 +16,8 @@ def setup():
 
     # Initial sleep time
     sleep_time = 60 * 5
+    py = Pytrack()
+
 
     # Connect to LoRaWAN Decent
     n = LORA()
@@ -24,7 +26,6 @@ def setup():
         py.setup_sleep(60)
         py.go_to_sleep()
 
-    py = Pytrack()
     
     gps = L76GNSS(py, timeout=1)
 
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         x, y, z = acc.acceleration()
         print ("Acc: x: %s, y: %s, z: %s" % (x, y, z))
         x_1, y_1, z_1 = "%.2f" % x, "%.2f" % y, "%.2f" % z 
-        sumAcc = float(x_1) + float(y_1) + float(z_1)
+        sumAcc = "%.2f" % (float(x_1) + float(y_1) + float(z_1))
         print ("Sum x, y, z Acc: %s" % (sumAcc))
 
         battery = py.read_battery_voltage()

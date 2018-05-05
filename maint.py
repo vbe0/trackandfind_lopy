@@ -18,12 +18,15 @@ def setup():
     # Initial sleep time
     sleep_time = 60
 
+    py = Pytrack()
+
     # Connect to LoRaWAN Decent
     n = LORA()
-    n.connect(config.dev_eui, config.app_eui, config.app_key)
-    
+    if (not n.connect(config.dev_eui, config.app_eui, config.app_key)): 
+        # If still not connected, go to sleep one minute and try again (reboots after sleep).
+        py.setup_sleep(60)
+        py.go_to_sleep()    
 
-    py = Pytrack()
 
     gps = L76GNSS(py, timeout=30)
 
@@ -49,12 +52,22 @@ if __name__ == "__main__":
     try:
         # Get gps coords
         m_lat, m_lng = gps.coordinates()
+        print ("GPS: %s, %s " % (m_lat, m_lng))
+        
+        # Get accelerometer data x, y, z, sends the sum. 
+        x, y, z = acc.acceleration()
+        print ("Acc: x: %s, y: %s, z: %s" % (x, y, z))
+        x_1, y_1, z_1 = "%.2f" % x, "%.2f" % y, "%.2f" % z 
+        sumAcc = "%.2f" % (float(x_1) + float(y_1) + float(z_1))
+        print ("Sum x, y, z Acc: %s" % (sumAcc))
+
         # Get battery voltage
         battery = py.read_battery_voltage()
         print("Battery: ", battery)
         battery  = "%.2f" % float(battery) 
         tmp = 100.0
         count = 0 
+
         # Get temperature
         while (float(tmp) > 50.0 and count < 5):
             tmp = temp.read_temp_async()
@@ -70,9 +83,9 @@ if __name__ == "__main__":
             print("tmp: ", tmp)
             tmp  = "%.2f" % float(tmp) 
             count += 1  
-
         print("Temperature: ", tmp, "Tries: ", count)
-        data = "%s %s %s %s" % (m_lat, m_lng, battery, tmp)
+        
+        data = "%s %s %s %s %s" % (m_lat, m_lng, battery, tmp, sumAcc)
         print("Data: ", data, "Size: ", len(data))
     except Exception as e:
         print("Measure error: ", e)
@@ -83,7 +96,6 @@ if __name__ == "__main__":
         LED.blink(1, 0.1, 0x0000ff)
         LED.off()  
     else :
-        # Send packet
         LED.blink(2, 0.1, 0xf0f000)
         LED.off()    
         
