@@ -101,4 +101,4 @@ class LORA(object):
 
     # Erease state telling that lora is saved. Will initate new connection next time. 
     def ereaseloraSaved(self):
-        pycompycom.nvs_erase('loraSaved')
+        pycom.nvs_erase('loraSaved')
