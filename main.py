@@ -44,7 +44,7 @@ if __name__ == "__main__":
         sleep(1)
         m_lat, m_lng = gps.coordinates()
         print ("GPS: %s, %s " % (m_lat, m_lng))
-
+        sleep(1)
         x, y, z = acc.acceleration()
         print ("Acc: x: %s, y: %s, z: %s" % (x, y, z))
         x_1, y_1, z_1 = "%.2f" % x, "%.2f" % y, "%.2f" % z 
