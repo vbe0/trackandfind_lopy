@@ -39,8 +39,7 @@ if __name__ == "__main__":
     setup()
 
     while (True):
-        sleep(5
-        )
+        sleep(5)
         data = ""
         m_lat = m_lng = None
         # Measure
