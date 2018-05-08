@@ -61,14 +61,14 @@ class LORA(object):
         self.s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
 
         # Make the socket non-blocking
-        self.s.setblocking(True)
+        self.s.setblocking(False)
 
         # print ("Joined! ",  count)
         # print("Create LoRaWAN socket")
 
         # Create a raw LoRa socket
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
-        self.s.setblocking(True)
+        self.s.setblocking(False)
         return True 
         
     def send(self, data):
@@ -94,11 +94,11 @@ class LORA(object):
                     pycom.nvs_erase('loraSaved')
             
         LED.off()
-        #data = self.s.recv(64)
-        #print("Received data:", data)
+        data = self.s.recv(64)
+        print("Received data:", data)
 
         return " "#data
 
     # Erease state telling that lora is saved. Will initate new connection next time. 
     def ereaseloraSaved(self):
-        pycom.nvs_erase('loraSaved')
+        pycom.nvs_erase('loraSaved') 
