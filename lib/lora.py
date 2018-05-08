@@ -61,14 +61,14 @@ class LORA(object):
         self.s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
 
         # Make the socket non-blocking
-        self.s.setblocking(True)
+        self.s.setblocking(False)
 
         # print ("Joined! ",  count)
         # print("Create LoRaWAN socket")
 
         # Create a raw LoRa socket
         self.s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
-        self.s.setblocking(True)
+        self.s.setblocking(False)
         return True 
         
     def send(self, data):
