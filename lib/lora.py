@@ -94,8 +94,8 @@ class LORA(object):
                     pycom.nvs_erase('loraSaved')
             
         LED.off()
-        #data = self.s.recv(64)
-        #print("Received data:", data)
+        data = self.s.recv(64)
+        print("Received data:", data)
 
         return " "#data
 
