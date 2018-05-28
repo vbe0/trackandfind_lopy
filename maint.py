@@ -16,7 +16,7 @@ import sys
 def setup():
     global n, gps, sleep_time, dn, py, temp, acc
     # Initial sleep time
-    sleep_time = 60
+    sleep_time = 30
 
     py = Pytrack()
 
@@ -28,7 +28,7 @@ def setup():
         py.go_to_sleep(gps=True)    
 
 
-    gps = L76GNSS(py, timeout=30)
+    gps = L76GNSS(py, timeout=15)
 
     acc = LIS2HH12(py)
 
