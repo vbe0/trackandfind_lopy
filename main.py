@@ -6,6 +6,7 @@ from pytrack import Pytrack
 from L76GNSS import L76GNSS # gps
 from LIS2HH12 import LIS2HH12 # acc
 from time import sleep
+import uos
 
 def setup():
 
@@ -15,7 +16,7 @@ def setup():
     global n, gps, sleep_time, dn, py, acc
 
     # Initial sleep time
-    sleep_time = 60 * 5
+    sleep_time = 60 * 3
     py = Pytrack()
 
 
@@ -41,6 +42,9 @@ if __name__ == "__main__":
     m_lat = m_lng = None
     # Measure
     try:
+        # Don't hava an temperature sensor, so just sets an value 
+        temp =  uos.urandom(1)[0]/256*7 + 8
+        print("Temp: ", temp)
         sleep(1)
         m_lat, m_lng = gps.coordinates()
         print ("GPS: %s, %s " % (m_lat, m_lng))
@@ -56,8 +60,6 @@ if __name__ == "__main__":
         print("Battery: ", battery)
         battery  = "%.2f" % float(battery) 
         
-        # Don't hava an temperature sensor, so just sets an value 
-        temp = 20.5
         
         data = "%s %s %s %s %s" % (m_lat, m_lng, battery, temp, sumAcc)
         print("Data: ", data, "Size:", len(data))
